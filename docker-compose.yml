@@ -1,0 +1,33 @@
+services:
+
+  postgresql:
+    build: ./postgresql
+    init: true
+    container_name: tf-idv-bd
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: text_db
+
+    ports:
+      - "8432:5432"
+    networks:   
+      - db_network
+    restart: always
+    read_only: false  
+    pids_limit: 50
+    cpus: 0.5
+    
+  #fastapi_app:
+  #  build: ./app
+  #  container_name: tf-idv-app
+  #  ports:
+  #    - "2222:8081"
+  #  networks:
+  #    - db_network
+
+    
+networks:
+  db_network:
+    driver: bridge
+    
