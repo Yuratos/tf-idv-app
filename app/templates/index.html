@@ -1,123 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>word frequency app</title>
+    <title>Анализ данных</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        h1, h2 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
-        .top-text{
-            text-align: center;
-        }
-        .data-section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #72a2c2;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        .faq {
-            margin-top: 40px;
-        }
-        .new-file{
-            background-color: #0066aa;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            display: block;
-            margin: 0 auto;
-        }
-        .error {
-            color: red;
-            padding: 10px;
-            background-color: #ffeeee;
-            border: 1px solid #ffcccc;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .pagination { margin-top: 20px; }
+        .pagination a { margin: 0 5px; text-decoration: none; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="top-text">Here you can count atleast 50 and more words frequency from your text file!</h1>
-        
-        {% if error %}
-        <div class="error">
-            <strong>Error:</strong> {{ error }}
-        </div>
-        {% else %}
+    <h1>Анализ файла</h1>
+    
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit">Загрузить файл</button>
+    </form>
 
-        <div class="data-section">
-            <h2>System Information</h2>
-            <p>Total IPs tracked: {{ tracked_ips|length }}</p>
-        </div>
+    {% if data %}
+    <h2>Результаты (страница {{ current_page }} из {{ total_pages }})</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Слово</th>
+                <th>tf</th>
+                <th>idf</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for word, values in data %}
+            <tr>
+                <td>{{ word }}</td>
+                <td>{{ "%.3f"|format(values[0]) }}</td>
+                <td>{{ values[1] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-        <div class="data-section">
-            <h2>Word Frequency Data</h2>
-            <table>
-                <tr>
-                    <th>Word</th>
-                    <th>tf</th>
-                    <th>idf</th>
-                </tr>
-                {% for data in words %}
-                <tr>
-                    <td>{{ data.word }}</td>
-                    <td>{{ data.tf}}</td>
-                    <td><pre>{{ data.idf}}</pre></td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-        <div class="data-section"> 
-            <div class="form-group">
-            <h2 class="top-text">Is the table empty? Just upload the text file!</h2>
-            <form action="/" method="post" enctype="multipart/form-data">
-                <input class = "new-file" type="file" id="myFile" accept=".txt" name="filename">
-                <br>
-                <input type="submit" class="new-file"> 
-              </form>
-            </div>
-            <!--<button class="new-file"> add new file!</button>-->
-        </div>    
+    <div class="pagination">
+        {% if current_page > 1 %}
+            <a href="/?page={{ current_page - 1 }}">← Предыдущая</a>
+        {% endif %}
+
+        {% for p in range(1, total_pages + 1) %}
+            {% if p == current_page %}
+                <strong>{{ p }}</strong>
+            {% else %}
+                <a href="/?page={{ p }}">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if current_page < total_pages %}
+            <a href="/?page={{ current_page + 1 }}">Следующая →</a>
         {% endif %}
     </div>
-
+    {% endif %}
 </body>
 </html>
- 
