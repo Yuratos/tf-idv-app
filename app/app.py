@@ -150,7 +150,7 @@ storage = {
 }
 
 @app.get("/", response_class=HTMLResponse)
-async def read_root(request: Request, page: int = 1):
+async def index(request: Request, page: int = 1):
     items_per_page = 50
     data = storage["data"]
     
