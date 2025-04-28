@@ -18,14 +18,15 @@ services:
     pids_limit: 50
     cpus: 0.5
     
-  #fastapi_app:
-  #  build: ./app
-  #  container_name: tf-idv-app
-  #  ports:
-  #    - "2222:8081"
-  #  networks:
-  #    - db_network
-
+  fastapi_app:
+    build: ./app
+    container_name: tf-idv-app
+    ports:
+      - "2222:8081"
+    networks:
+      - db_network
+    depends_on:
+      - postgresql
     
 networks:
   db_network:
